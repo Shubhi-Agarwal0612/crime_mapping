@@ -22,7 +22,7 @@ export default function Predictions() {
   const predictions = [
     {
       id: 1,
-      area: "Downtown District",
+      area: "Sanganer",
       type: "Theft",
       riskLevel: "High",
       confidence: 87,
@@ -31,7 +31,7 @@ export default function Predictions() {
     },
     {
       id: 2,
-      area: "Shopping District",
+      area: "Jhotwara",
       type: "Vandalism",
       riskLevel: "Medium",
       confidence: 78,
@@ -40,7 +40,7 @@ export default function Predictions() {
     },
     {
       id: 3,
-      area: "Park Area",
+      area: "Vaishali Nagar",
       type: "Robbery",
       riskLevel: "High",
       confidence: 82,

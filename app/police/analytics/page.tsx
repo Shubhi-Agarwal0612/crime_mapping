@@ -16,11 +16,11 @@ import { MapPin, Calendar, TrendingDown } from "lucide-react"
 
 export default function Analytics() {
   const areaData = [
-    { area: "Downtown", incidents: 45 },
-    { area: "North District", incidents: 32 },
-    { area: "South District", incidents: 28 },
-    { area: "East Side", incidents: 25 },
-    { area: "West Side", incidents: 15 },
+    { area: "Sanganer", incidents: 45 },
+    { area: "Jhotwara", incidents: 32 },
+    { area: "Vaishali Nagar", incidents: 28 },
+    { area: "Jawahar Circle", incidents: 25 },
+    { area: "Jagatpura", incidents: 15 },
   ]
 
   const monthlyData = [

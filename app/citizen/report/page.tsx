@@ -8,7 +8,9 @@ import { MapPin, Clock, FileText, Send } from "lucide-react"
 export default function ReportCrime() {
   const [formData, setFormData] = useState({
     crimeType: "",
-    location: "",
+    //location: "",
+    state:"",
+    district:"",
     description: "",
     time: "",
   })
@@ -48,18 +50,33 @@ export default function ReportCrime() {
             </select>
           </div>
 
-          {/* Location */}
+          {/* state */}
           <div>
             <label className="block text-text font-semibold mb-2 flex items-center gap-2">
               <MapPin className="w-4 h-4" />
-              Location *
+              State *
             </label>
             <input
               required
               type="text"
-              placeholder="Street address or area name"
-              value={formData.location}
-              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              placeholder="State name"
+              value={formData.state}
+              onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+              className="w-full bg-surface border border-border rounded-md px-4 py-2 text-text placeholder:text-text-weak focus:outline-none focus:border-primary"
+            />
+          </div>
+          {/* district */}
+          <div>
+            <label className="block text-text font-semibold mb-2 flex items-center gap-2">
+              <MapPin className="w-4 h-4" />
+              District *
+            </label>
+            <input
+              required
+              type="text"
+              placeholder="District name"
+              value={formData.district}
+              onChange={(e) => setFormData({ ...formData, district: e.target.value })}
               className="w-full bg-surface border border-border rounded-md px-4 py-2 text-text placeholder:text-text-weak focus:outline-none focus:border-primary"
             />
           </div>

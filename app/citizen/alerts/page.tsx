@@ -1,34 +1,112 @@
-"use client"
+// app/citizen/alerts/page.tsx
 
-import { Zap, MapPin, Clock } from "lucide-react"
+"use client";
 
-export default function Alerts() {
-  const alerts = [
-    {
-      id: 1,
-      type: "High Crime Activity",
-      location: "Downtown District",
-      description: "Multiple robberies reported in the area",
-      severity: "Critical",
-      time: "1 hour ago",
-    },
-    {
-      id: 2,
-      type: "Suspicious Activity",
-      location: "5th Avenue",
-      description: "Unusual activity near your location",
-      severity: "Medium",
-      time: "3 hours ago",
-    },
-    {
-      id: 3,
-      type: "Theft Warning",
-      location: "Shopping District",
-      description: "Increased theft incidents",
-      severity: "High",
-      time: "5 hours ago",
-    },
-  ]
+import { Zap, MapPin, Clock } from "lucide-react";
+import { useState, useEffect } from 'react';
+import { getCrimePrediction } from '@/lib/crimeApi'; 
+
+//geolocation function
+function getCurrentLocation(): Promise<{ latitude: number, longitude: number }> {
+    return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+            reject(new Error("Geolocation is not supported by your browser."));
+            return;
+        }
+        
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                resolve({
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude
+                });
+            },
+            (error) => {
+                // Handle permission denied (error.code = 1) or position unavailable
+                reject(new Error(`Geolocation error: ${error.message}`));
+            }
+        );
+    });
+}
+
+interface AlertItem {
+  id: number;
+  type: string;
+  location: string;
+  description: string;
+  severity: "Critical" | "High" | "Medium" | "Low";
+  time: string;
+}
+
+
+// 2. Main Component (renamed to AlertsPage for Next.js App Router convention)
+export default function AlertsPage() {
+  const [dynamicAlerts, setDynamicAlerts] = useState<AlertItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // 3. API Call Logic
+useEffect(() => {
+        async function fetchDynamicRiskData() {
+            setLoading(true);
+            try {
+                const { latitude, longitude } = await getCurrentLocation();
+
+                const dynamicInput = {
+                    state: "Rajasthan",      
+                    district: "Jaipur",      
+                    year: new Date().getFullYear(),
+                    latitude: latitude,
+                    longitude: longitude
+                };
+                
+                // 3. Call Prediction API with Dynamic Coordinates
+                const result = await getCrimePrediction(dynamicInput);
+                const riskLevel = result['Predicted Risk Level'];
+                
+                // 4. Create Alert Item
+                const newAlert: AlertItem = {
+                    id: 100,
+                    type: `ML Risk Assessment: ${riskLevel}`,
+                    location: `${dynamicInput.district}, ${dynamicInput.state}`, // Show the dynamic location
+                    description: `Predicted by the model to be a ${riskLevel} area at your current coordinates.`,
+                    severity: 
+                        riskLevel === 'High Risk' ? 'Critical' : 
+                        riskLevel === 'Moderate Risk' ? 'High' : 
+                        'Low',
+                    time: new Date().toLocaleTimeString(),
+                };
+
+                setDynamicAlerts([newAlert]);
+                
+            } catch (err) {
+                // Handle geolocation errors (like permission denied) or API errors
+                setError("Could not get location or prediction: " + (err as Error).message);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchDynamicRiskData();
+    }, []);
+
+  // --- RENDERING LOGIC ---
+
+  if (loading) {
+    return (
+      <div className="p-6 text-lg text-text-muted">
+        <p>Analyzing area risk... Please wait.</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 text-lg text-danger">
+        🚨 Error: {error}
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 bg-background">
@@ -39,7 +117,8 @@ export default function Alerts() {
 
       <div className="p-6 max-w-4xl">
         <div className="space-y-4">
-          {alerts.map((alert) => (
+          {/* Use the dynamicAlerts state for mapping */}
+          {dynamicAlerts.map((alert) => (
             <div key={alert.id} className="bg-surface-alt border border-border rounded-lg p-6">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-start gap-4">
@@ -82,5 +161,5 @@ export default function Alerts() {
         </div>
       </div>
     </div>
-  )
+  );
 }
